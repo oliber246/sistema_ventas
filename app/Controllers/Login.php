@@ -39,8 +39,7 @@ class Login extends BaseController
                 
                 session()->set($datosSesion);
 
-                // Lo mandamos a la lista de productos
-                return redirect()->to(base_url('productos'));
+                return redirect()->to(base_url('dashboard'));
 
             } else {
                 // Contraseña incorrecta

@@ -25,5 +25,5 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     
     // Esta es la ruta especial para AJAX
     $routes->get('ventas/precio_producto/(:num)', 'Ventas::precio_producto/$1');
-
+    $routes->get('dashboard', 'Dashboard::index');
 });

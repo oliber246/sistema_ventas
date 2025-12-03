@@ -11,12 +11,7 @@
 
 <body>
 
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="<?= base_url('productos'); ?>">Sistema de Ventas</a>
-            <a href="<?= base_url('salir'); ?>" class="btn btn-outline-light btn-sm">Salir</a>
-        </div>
-    </nav>
+    <?= view('menu'); ?>
 
     <div class="container">
         <h2 class="mb-4">Registrar Nueva Venta</h2>
