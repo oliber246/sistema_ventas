@@ -26,4 +26,10 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     // Esta es la ruta especial para AJAX
     $routes->get('ventas/precio_producto/(:num)', 'Ventas::precio_producto/$1');
     $routes->get('dashboard', 'Dashboard::index');
+
+    // Rutas de Reportes
+    $routes->get('reportes/html', 'Reportes::html');
+    $routes->get('reportes/pdf', 'Reportes::pdf');
+    $routes->get('reportes/excel', 'Reportes::excel');
+    $routes->get('reportes/csv', 'Reportes::csv');
 });
