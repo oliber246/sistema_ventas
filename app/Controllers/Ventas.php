@@ -88,4 +88,20 @@ class Ventas extends BaseController
         return $this->response->setJSON(['status' => 'success']);
     }
 
+    // Listar historial de ventas con nombre de cliente
+    public function historial()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('ventas');
+
+        // Seleccionamos ID, Fecha, Total y el Nombre del Cliente (haciendo unión de tablas)
+        $builder->select('ventas.id, ventas.fecha, ventas.total, clientes.nombre as cliente');
+        $builder->join('clientes', 'clientes.id = ventas.id_cliente');
+        $builder->orderBy('ventas.id', 'DESC'); // Las más recientes primero
+
+        $data['ventas'] = $builder->get()->getResultArray();
+
+        return view('ventas/listado', $data);
+    }
+
 }

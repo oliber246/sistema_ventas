@@ -32,4 +32,14 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('reportes/pdf', 'Reportes::pdf');
     $routes->get('reportes/excel', 'Reportes::excel');
     $routes->get('reportes/csv', 'Reportes::csv');
+
+    // --- RUTAS DE CLIENTES ---
+    $routes->get('clientes', 'Clientes::index');
+    $routes->get('clientes/nuevo', 'Clientes::nuevo');
+    $routes->post('clientes/guardar', 'Clientes::guardar');
+    $routes->get('clientes/editar/(:num)', 'Clientes::editar/$1');
+    $routes->post('clientes/actualizar', 'Clientes::actualizar');
+    $routes->get('clientes/borrar/(:num)', 'Clientes::borrar/$1');
+
+    $routes->get('ventas/historial', 'Ventas::historial');
 });
