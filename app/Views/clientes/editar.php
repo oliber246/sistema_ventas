@@ -5,11 +5,10 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
-            <div class="card-header bg-warning text-dark">
-                <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Editar Cliente</h4>
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Editar Cliente</h5>
             </div>
-            <div class="card-body p-4">
-
+            <div class="card-body">
                 <form action="<?= base_url('clientes/actualizar'); ?>" method="post">
                     <input type="hidden" name="id" value="<?= $cliente['id']; ?>">
 
@@ -30,18 +29,15 @@
                     </div>
 
                     <hr>
-
                     <div class="d-flex justify-content-between">
                         <a href="<?= base_url('clientes'); ?>" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left-circle me-1"></i> Cancelar
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
                         </a>
-                        <button type="submit" class="btn btn-warning">
-                            <i class="bi bi-check-circle-fill me-1"></i> Actualizar Datos
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Actualizar Datos
                         </button>
                     </div>
-
                 </form>
-
             </div>
         </div>
     </div>

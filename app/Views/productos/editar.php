@@ -1,49 +1,48 @@
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Editar Producto</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body>
-    
-    <div class="container mt-5" style="max-width: 600px;">
-        <h2 class="mb-4">Editar Producto</h2>
-        
+<?= $this->extend('layout/main'); ?>
+
+<?= $this->section('contenido'); ?>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
         <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Editar Producto</h5>
+            </div>
             <div class="card-body">
                 <form action="<?= base_url('productos/actualizar'); ?>" method="post">
-                    
                     <input type="hidden" name="id" value="<?= $producto['id']; ?>">
 
                     <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre del Producto</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" 
-                               value="<?= $producto['nombre']; ?>" required>
+                        <label class="form-label">Nombre del Producto</label>
+                        <input type="text" name="nombre" class="form-control" value="<?= $producto['nombre']; ?>"
+                            required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="precio" class="form-label">Precio (S/)</label>
-                        <input type="number" step="0.01" class="form-control" id="precio" name="precio" 
-                               value="<?= $producto['precio']; ?>" required>
+                        <label class="form-label">Precio (S/)</label>
+                        <input type="number" step="0.01" name="precio" class="form-control"
+                            value="<?= $producto['precio']; ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="stock" class="form-label">Stock (Cantidad)</label>
-                        <input type="number" class="form-control" id="stock" name="stock" 
-                               value="<?= $producto['stock']; ?>" required>
+                        <label class="form-label">Stock (Cantidad)</label>
+                        <input type="number" name="stock" class="form-control" value="<?= $producto['stock']; ?>"
+                            required>
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-warning">Actualizar Producto</button>
-                        <a href="<?= base_url('productos'); ?>" class="btn btn-secondary">Cancelar</a>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <a href="<?= base_url('productos'); ?>" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Actualizar Producto
+                        </button>
                     </div>
-
                 </form>
             </div>
         </div>
     </div>
+</div>
 
-  </body>
-</html>
+<?= $this->endSection(); ?>

@@ -9,6 +9,19 @@ class Login extends BaseController
     // Muestra la vista del login
     public function index()
     {
+        // --- CÓDIGO DE REPARACIÓN DE VENTAS (Solo una vez) ---
+        $db = \Config\Database::connect();
+        try {
+            // 1. Agregamos la columna id_usuario a la tabla ventas
+            $db->query("ALTER TABLE ventas ADD COLUMN id_usuario INT(11) AFTER id_cliente;");
+
+            // 2. (Opcional pero recomendado) Agregamos columna id_usuario a detalle_venta por si acaso
+            // $db->query("ALTER TABLE detalle_venta ADD COLUMN id_usuario INT(11);");
+
+        } catch (\Throwable $e) {
+            // Si ya existe, ignoramos el error
+        }
+        // -----------------------------------------------------
         return view('login');
     }
 
