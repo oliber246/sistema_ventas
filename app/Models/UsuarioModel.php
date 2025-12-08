@@ -11,5 +11,5 @@ class UsuarioModel extends Model
     protected $returnType = 'array';
     
     // Permitimos que se consulten o modifiquen estos campos
-    protected $allowedFields = ['usuario', 'password', 'nombre'];
+    protected $allowedFields = ['usuario', 'password', 'email'];
 }

@@ -10,8 +10,8 @@ $routes->post('login/acceder', 'Login::acceder'); // Ruta para procesar el login
 $routes->get('salir', 'Login::salir'); // Ruta para cerrar sesión
 
 // Todo lo que va aquí dentro, pasará por el filtro 'auth'
-$routes->group('', ['filter' => 'auth'], function($routes) {
-    
+$routes->group('', ['filter' => 'auth'], function ($routes) {
+
     $routes->get('productos', 'Productos::index');
     $routes->get('productos/nuevo', 'Productos::nuevo');
     $routes->post('productos/guardar', 'Productos::guardar');
@@ -22,7 +22,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     // Rutas de Ventas
     $routes->get('ventas', 'Ventas::index');
     $routes->post('ventas/guardar', 'Ventas::guardar');
-    
+
     // Esta es la ruta especial para AJAX
     $routes->get('ventas/precio_producto/(:num)', 'Ventas::precio_producto/$1');
     $routes->get('dashboard', 'Dashboard::index');
@@ -42,4 +42,16 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('clientes/borrar/(:num)', 'Clientes::borrar/$1');
 
     $routes->get('ventas/historial', 'Ventas::historial');
+
+    // Rutas de Perfil
+    $routes->get('perfil', 'Perfil::index');
+    $routes->post('perfil/actualizar', 'Perfil::actualizar');
+
+    // --- RUTAS DE USUARIOS ---
+    $routes->get('usuarios', 'Usuarios::index');
+    $routes->get('usuarios/nuevo', 'Usuarios::nuevo');
+    $routes->post('usuarios/guardar', 'Usuarios::guardar');
+    $routes->get('usuarios/editar/(:num)', 'Usuarios::editar/$1');
+    $routes->post('usuarios/actualizar', 'Usuarios::actualizar');
+    $routes->get('usuarios/borrar/(:num)', 'Usuarios::borrar/$1');
 });

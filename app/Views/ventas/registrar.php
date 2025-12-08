@@ -1,211 +1,193 @@
-<!doctype html>
-<html lang="es">
+<?= $this->extend('layout/main'); ?>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nueva Venta</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-</head>
+<?= $this->section('contenido'); ?>
 
-<body>
-
-    <?= view('menu'); ?>
-
-    <div class="container">
-        <h2 class="mb-4">Registrar Nueva Venta</h2>
-
-        <div class="row">
-
-            <div class="col-md-4">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        Datos de la Venta
-                    </div>
-                    <div class="card-body">
-
-                        <div class="mb-3">
-                            <label class="form-label">Cliente</label>
-                            <select class="form-select" id="cliente" name="cliente">
-                                <option value="">Seleccione un cliente...</option>
-                                <?php foreach ($clientes as $cli): ?>
-                                    <option value="<?= $cli['id']; ?>"><?= $cli['nombre']; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <hr>
-
-                        <div class="mb-3">
-                            <label class="form-label">Producto</label>
-                            <select class="form-select" id="producto">
-                                <option value="">Seleccione un producto...</option>
-                                <?php foreach ($productos as $prod): ?>
-                                    <option value="<?= $prod['id']; ?>"><?= $prod['nombre']; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Precio Unitario</label>
-                            <input type="text" class="form-control" id="precio" readonly>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Stock Disponible</label>
-                            <input type="text" class="form-control" id="stock" readonly>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Cantidad</label>
-                            <input type="number" class="form-control" id="cantidad" value="1" min="1">
-                        </div>
-
-                        <button class="btn btn-success w-100" id="btn_agregar" type="button">Agregar al Carrito</button>
-                    </div>
-                </div>
+<div class="row">
+    <div class="col-md-5">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Datos de la Venta</h5>
             </div>
-
-            <div class="col-md-8">
-                <div class="card shadow">
-                    <div class="card-header bg-secondary text-white">
-                        Resumen de Venta
+            <div class="card-body">
+                <form id="formVenta">
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        <select class="form-select" id="cliente" required>
+                            <option value="">Seleccione un cliente...</option>
+                            <?php foreach ($clientes as $cli): ?>
+                                <option value="<?= $cli['id']; ?>"><?= $cli['nombre']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                    <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Cant.</th>
-                                    <th>Precio</th>
-                                    <th>Subtotal</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabla_productos">
-                            </tbody>
-                        </table>
 
-                        <div class="text-end mt-4">
-                            <h3>Total: S/ <span id="total_venta">0.00</span></h3>
-                        </div>
-
-                        <div class="d-grid mt-3">
-                            <button class="btn btn-primary btn-lg" onclick="guardarVenta()">
-                                Finalizar Venta
-                            </button>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Producto</label>
+                        <select class="form-select" id="producto">
+                            <option value="">Seleccione un producto...</option>
+                            <?php foreach ($productos as $prod): ?>
+                                <option value="<?= $prod['id']; ?>" data-precio="<?= $prod['precio']; ?>"
+                                    data-stock="<?= $prod['stock']; ?>">
+                                    <?= $prod['nombre']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Precio Unitario</label>
+                        <input type="text" class="form-control" id="precio" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Stock Disponible</label>
+                        <input type="text" class="form-control" id="stock" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" class="form-control" id="cantidad" value="1" min="1">
+                    </div>
+
+                    <button type="button" class="btn btn-success w-100" id="btnAgregar">
+                        Agregar al Carrito
+                    </button>
+                </form>
             </div>
-
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        $(document).ready(function () {
+    <div class="col-md-7">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Resumen de Venta</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant.</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCarrito">
+                    </tbody>
+                </table>
 
-            // Lista oculta para guardar los productos
-            let carrito = [];
+                <div class="text-end">
+                    <h3>Total: S/ <span id="totalVenta">0.00</span></h3>
+                </div>
 
-            // 1. AJAX: Buscar precio al cambiar producto
-            $('#producto').change(function () {
-                let id_producto = $(this).val();
-                if (id_producto != "") {
-                    $.ajax({
-                        url: "<?= base_url('ventas/precio_producto/'); ?>" + id_producto,
-                        method: "GET",
-                        dataType: "json",
-                        success: function (datos) {
-                            $('#precio').val(datos.precio);
-                            $('#stock').val(datos.stock);
-                        }
-                    });
-                } else {
-                    $('#precio').val(''); $('#stock').val('');
-                }
-            });
+                <button type="button" class="btn btn-primary w-100 mt-3" id="btnFinalizar">
+                    Finalizar Venta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-            // 2. AGREGAR AL CARRITO
-            $('#btn_agregar').click(function () {
-                let id_producto = $('#producto').val();
-                let nombre = $('#producto option:selected').text();
-                let precio = parseFloat($('#precio').val());
-                let cantidad = parseInt($('#cantidad').val());
-                let stock = parseInt($('#stock').val());
+<?= $this->endSection(); ?>
 
-                // Validaciones
-                if (id_producto == "" || isNaN(precio)) {
-                    alert("Selecciona un producto válido"); return;
-                }
-                if (cantidad > stock) {
-                    alert("Stock insuficiente. Solo hay " + stock); return;
-                }
 
-                // Calcular subtotal
-                let subtotal = precio * cantidad;
+<?= $this->section('scripts'); ?>
+<script>
+    $(document).ready(function () {
+        let carrito = []; // Array para almacenar los productos seleccionados
 
-                // Agregar a la lista invisible (para enviar luego al servidor)
-                carrito.push({
-                    id: id_producto,
-                    cantidad: cantidad,
-                    precio: precio,
-                    subtotal: subtotal
-                });
+        // 1. EVENTO: Cuando cambia el producto seleccionado
+        $('#producto').change(function () {
+            // Obtenemos la opción seleccionada
+            let selected = $(this).find('option:selected');
+            // Extraemos los datos guardados en data-precio y data-stock
+            let precio = selected.data('precio');
+            let stock = selected.data('stock');
 
-                // Dibujar en la tabla visible
-                let fila = "<tr>" +
-                    "<td>" + nombre + "</td>" +
-                    "<td>" + cantidad + "</td>" +
-                    "<td>" + precio.toFixed(2) + "</td>" +
-                    "<td>" + subtotal.toFixed(2) + "</td>" +
-                    "<td><button class='btn btn-danger btn-sm' onclick='alert(\"Función pendiente\")'>X</button></td>" +
-                    "</tr>";
-                $('#tabla_productos').append(fila);
-
-                // Actualizar Total
-                actualizarTotal();
-            });
-
-            function actualizarTotal() {
-                let total = 0;
-                carrito.forEach(item => total += item.subtotal);
-                $('#total_venta').text(total.toFixed(2));
-            }
-
-            // 3. FINALIZAR VENTA (Guardar en BD)
-            window.guardarVenta = function () {
-                let id_cliente = $('#cliente').val();
-
-                if (id_cliente == "") {
-                    alert("Por favor selecciona un cliente"); return;
-                }
-                if (carrito.length == 0) {
-                    alert("El carrito está vacío"); return;
-                }
-
-                // Enviar todo al servidor por AJAX
-                $.ajax({
-                    url: "<?= base_url('ventas/guardar'); ?>",
-                    method: "POST",
-                    data: {
-                        id_cliente: id_cliente,
-                        productos: JSON.stringify(carrito) // Convertimos la lista a texto
-                    },
-                    success: function (respuesta) {
-                        alert("Venta registrada correctamente!");
-                        window.location.href = "<?= base_url('ventas'); ?>"; // Recargar página
-                    },
-                    error: function () {
-                        alert("Error al guardar la venta");
-                    }
-                });
-            };
+            // Actualizamos los inputs visuales
+            $('#precio').val(precio);
+            $('#stock').val(stock);
         });
-    </script>
 
-</body>
+        // 2. EVENTO: Botón "Agregar al Carrito"
+        $('#btnAgregar').click(function () {
+            // Capturamos valores del formulario
+            let idProd = $('#producto').val();
+            let nombreProd = $('#producto option:selected').text();
+            let precio = parseFloat($('#precio').val());
+            let cantidad = parseInt($('#cantidad').val());
+            let stock = parseInt($('#stock').val());
 
-</html>
+            // Validaciones básicas
+            if (!idProd) { alert("Seleccione un producto"); return; }
+            if (cantidad > stock) { alert("No hay suficiente stock"); return; }
+            if (cantidad <= 0) { alert("Cantidad inválida"); return; }
+
+            // Calculamos subtotal
+            let subtotal = precio * cantidad;
+
+            // Agregamos el objeto al array del carrito
+            carrito.push({
+                id: idProd,
+                nombre: nombreProd,
+                cantidad: cantidad,
+                precio: precio,
+                subtotal: subtotal
+            });
+
+            // Actualizamos la tabla visual
+            actualizarTabla();
+        });
+
+        // 3. FUNCIÓN: Actualizar Tabla Visual
+        function actualizarTabla() {
+            let tbody = $('#tablaCarrito');
+            tbody.empty(); // Limpiamos la tabla
+            let total = 0;
+
+            // Recorremos el carrito y dibujamos cada fila
+            carrito.forEach((item, index) => {
+                total += item.subtotal;
+                tbody.append(`
+                    <tr>
+                        <td>${item.nombre}</td>
+                        <td>${item.cantidad}</td>
+                        <td>${item.precio}</td>
+                        <td>${item.subtotal.toFixed(2)}</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="eliminarDelCarrito(${index})">X</button></td>
+                    </tr>
+                `);
+            });
+
+            // Actualizamos el texto del Total
+            $('#totalVenta').text(total.toFixed(2));
+        }
+
+        // 4. FUNCIÓN GLOBAL: Eliminar ítem (necesita estar en window para que el botón HTML la vea)
+        window.eliminarDelCarrito = function (index) {
+            carrito.splice(index, 1); // Quita el elemento del array
+            actualizarTabla(); // Redibuja la tabla
+        };
+
+        // 5. EVENTO: Finalizar Venta (AJAX)
+        $('#btnFinalizar').click(function () {
+            let idCliente = $('#cliente').val();
+
+            if (!idCliente) { alert("Seleccione un cliente"); return; }
+            if (carrito.length === 0) { alert("El carrito está vacío"); return; }
+
+            if (!confirm("¿Procesar venta?")) return;
+
+            // Enviamos los datos al servidor con AJAX
+            $.post('<?= base_url('ventas/guardar'); ?>', {
+                id_cliente: idCliente,
+                productos: carrito // Enviamos todo el array de productos
+            }, function (response) {
+                alert("Venta registrada correctamente");
+                location.reload(); // Recargamos la página para limpiar todo
+            }).fail(function () {
+                alert("Error al procesar la venta");
+            });
+        });
+    });
+</script>
+<?= $this->endSection(); ?>
