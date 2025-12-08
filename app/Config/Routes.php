@@ -55,3 +55,4 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->post('usuarios/actualizar', 'Usuarios::actualizar');
     $routes->get('usuarios/borrar/(:num)', 'Usuarios::borrar/$1');
 });
+$routes->get('reparar-ventas', 'Home::repararVentas');

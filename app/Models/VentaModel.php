@@ -9,5 +9,7 @@ class VentaModel extends Model
     protected $table      = 'ventas';
     protected $primaryKey = 'id';
     protected $returnType = 'array';
-    protected $allowedFields = ['id_cliente', 'id_usuario', 'fecha', 'total'];
+    
+    // AQUÍ ESTÁ LA CLAVE: Deben estar estos 4 campos
+    protected $allowedFields = ['fecha', 'id_cliente', 'id_usuario', 'total'];
 }

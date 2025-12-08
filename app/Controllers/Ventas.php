@@ -37,55 +37,71 @@ class Ventas extends BaseController
     }
 
     // 3. Guardar la venta completa
+    // 3. Guardar la venta completa (VERSIÓN CON DIAGNÓSTICO)
     public function guardar()
     {
-        // Modelos necesarios
-        $ventaModel = new VentaModel();
-        $detalleModel = new DetalleVentaModel();
-        $productoModel = new ProductoModel();
-
-        // Recibir datos del AJAX
-        $idCliente = $this->request->getPost('id_cliente');
-        $productos = json_decode($this->request->getPost('productos'), true); // Convertir texto a array
-
-        // Calcular el total final (por seguridad, lo recalculamos aquí)
-        $totalVenta = 0;
-        foreach ($productos as $prod) {
-            $totalVenta += $prod['subtotal'];
+        // Activar reporte de errores para verlos
+        try {
+            // Modelos necesarios
+            $ventaModel = new VentaModel();
+            $detalleModel = new DetalleVentaModel();
+            $productoModel = new ProductoModel();
+    
+            // Recibir datos del AJAX
+            $idCliente = $this->request->getPost('id_cliente');
+            $productos = json_decode($this->request->getPost('productos'), true);
+    
+            // Validación básica
+            if (empty($productos)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'No hay productos en el carrito']);
+            }
+    
+            // Calcular total
+            $totalVenta = 0;
+            foreach ($productos as $prod) {
+                $totalVenta += $prod['subtotal'];
+            }
+    
+            // A. Insertar en tabla VENTAS
+            $dataVenta = [
+                'id_cliente' => $idCliente,
+                'id_usuario' => session()->get('id_usuario'),
+                'total'      => $totalVenta,
+                'fecha'      => date('Y-m-d H:i:s') // <--- AGREGAMOS LA FECHA MANUALMENTE POR SI ACASO
+            ];
+    
+            // Intentamos insertar
+            if (!$ventaModel->insert($dataVenta)) {
+                // Si falla, devolvemos los errores del modelo
+                return $this->response->setJSON(['status' => 'error', 'message' => $ventaModel->errors()]);
+            }
+            
+            $idVenta = $ventaModel->getInsertID();
+    
+            // B. Insertar DETALLES y Actualizar STOCK
+            foreach ($productos as $prod) {
+                $detalleModel->insert([
+                    'id_venta'    => $idVenta,
+                    'id_producto' => $prod['id'],
+                    'cantidad'    => $prod['cantidad'],
+                    'precio'      => $prod['precio']
+                ]);
+    
+                // Restar stock
+                $productoActual = $productoModel->find($prod['id']);
+                if($productoActual) {
+                    $nuevoStock = $productoActual['stock'] - $prod['cantidad'];
+                    $productoModel->update($prod['id'], ['stock' => $nuevoStock]);
+                }
+            }
+    
+            // Si llegamos aquí, todo salió bien
+            return $this->response->setJSON(['status' => 'success']);
+            
+        } catch (\Throwable $e) {
+            // AQUÍ ESTÁ EL TRUCO: Si algo explota, devolvemos el error real
+            return $this->response->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
         }
-
-        // A. Insertar en tabla VENTAS
-        $dataVenta = [
-            'id_cliente' => $idCliente,
-            'id_usuario' => session()->get('id_usuario'), // El usuario que está logueado
-            'total' => $totalVenta,
-            // 'fecha' se pone automática por la base de datos
-        ];
-
-        $ventaModel->insert($dataVenta);
-        $idVenta = $ventaModel->getInsertID(); // Obtenemos el ID de la venta recién creada
-
-        // B. Insertar DETALLES y Actualizar STOCK
-        foreach ($productos as $prod) {
-            // 1. Guardar detalle
-            $detalleModel->insert([
-                'id_venta' => $idVenta,
-                'id_producto' => $prod['id'],
-                'cantidad' => $prod['cantidad'],
-                'precio' => $prod['precio']
-            ]);
-
-            // 2. Restar stock del producto
-            // Primero buscamos el stock actual
-            $productoActual = $productoModel->find($prod['id']);
-            $nuevoStock = $productoActual['stock'] - $prod['cantidad'];
-
-            // Actualizamos
-            $productoModel->update($prod['id'], ['stock' => $nuevoStock]);
-        }
-
-        // Responder al JS que todo salió bien
-        return $this->response->setJSON(['status' => 'success']);
     }
 
     // Listar historial de ventas con nombre de cliente
