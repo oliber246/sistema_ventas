@@ -9,19 +9,26 @@ class Login extends BaseController
     // Muestra la vista del login
     public function index()
     {
-        // --- CÓDIGO DE REPARACIÓN DE VENTAS (Solo una vez) ---
+        // --- 🛠️ CÓDIGO DE REPARACIÓN AUTOMÁTICA ---
+        // Esto se ejecutará cada vez que alguien cargue el Login.
+        // Intentará crear la columna 'id_usuario' si no existe.
         $db = \Config\Database::connect();
+
         try {
-            // 1. Agregamos la columna id_usuario a la tabla ventas
-            $db->query("ALTER TABLE ventas ADD COLUMN id_usuario INT(11) AFTER id_cliente;");
-
-            // 2. (Opcional pero recomendado) Agregamos columna id_usuario a detalle_venta por si acaso
-            // $db->query("ALTER TABLE detalle_venta ADD COLUMN id_usuario INT(11);");
-
+            // Intentamos agregar la columna id_usuario a la tabla ventas
+            $db->query("ALTER TABLE ventas ADD COLUMN id_usuario INT(11) DEFAULT NULL AFTER id_cliente;");
         } catch (\Throwable $e) {
-            // Si ya existe, ignoramos el error
+            // Si falla (porque ya existe), no hacemos nada y seguimos.
         }
-        // -----------------------------------------------------
+
+        try {
+            // Intentamos configurar la fecha automática
+            $db->query("ALTER TABLE ventas MODIFY COLUMN fecha DATETIME DEFAULT CURRENT_TIMESTAMP;");
+        } catch (\Throwable $e) {
+            // Ignorar si falla
+        }
+        // ---------------------------------------------
+
         return view('login');
     }
 
