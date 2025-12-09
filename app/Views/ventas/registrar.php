@@ -93,39 +93,32 @@
 <?= $this->section('scripts'); ?>
 <script>
     $(document).ready(function () {
-        let carrito = []; // Array para almacenar los productos seleccionados
+        let carrito = [];
 
         // 1. EVENTO: Cuando cambia el producto seleccionado
         $('#producto').change(function () {
-            // Obtenemos la opción seleccionada
             let selected = $(this).find('option:selected');
-            // Extraemos los datos guardados en data-precio y data-stock
             let precio = selected.data('precio');
             let stock = selected.data('stock');
 
-            // Actualizamos los inputs visuales
             $('#precio').val(precio);
             $('#stock').val(stock);
         });
 
         // 2. EVENTO: Botón "Agregar al Carrito"
         $('#btnAgregar').click(function () {
-            // Capturamos valores del formulario
             let idProd = $('#producto').val();
             let nombreProd = $('#producto option:selected').text();
             let precio = parseFloat($('#precio').val());
             let cantidad = parseInt($('#cantidad').val());
             let stock = parseInt($('#stock').val());
 
-            // Validaciones básicas
             if (!idProd) { alert("Seleccione un producto"); return; }
             if (cantidad > stock) { alert("No hay suficiente stock"); return; }
             if (cantidad <= 0) { alert("Cantidad inválida"); return; }
 
-            // Calculamos subtotal
             let subtotal = precio * cantidad;
 
-            // Agregamos el objeto al array del carrito
             carrito.push({
                 id: idProd,
                 nombre: nombreProd,
@@ -134,17 +127,15 @@
                 subtotal: subtotal
             });
 
-            // Actualizamos la tabla visual
             actualizarTabla();
         });
 
         // 3. FUNCIÓN: Actualizar Tabla Visual
         function actualizarTabla() {
             let tbody = $('#tablaCarrito');
-            tbody.empty(); // Limpiamos la tabla
+            tbody.empty();
             let total = 0;
 
-            // Recorremos el carrito y dibujamos cada fila
             carrito.forEach((item, index) => {
                 total += item.subtotal;
                 tbody.append(`
@@ -158,17 +149,16 @@
                 `);
             });
 
-            // Actualizamos el texto del Total
             $('#totalVenta').text(total.toFixed(2));
         }
 
-        // 4. FUNCIÓN GLOBAL: Eliminar ítem (necesita estar en window para que el botón HTML la vea)
+        // 4. FUNCIÓN GLOBAL: Eliminar ítem
         window.eliminarDelCarrito = function (index) {
-            carrito.splice(index, 1); // Quita el elemento del array
-            actualizarTabla(); // Redibuja la tabla
+            carrito.splice(index, 1);
+            actualizarTabla();
         };
 
-        // 5. EVENTO: Finalizar Venta (AJAX)
+        // 5. EVENTO: Finalizar Venta (CORREGIDO)
         $('#btnFinalizar').click(function () {
             let idCliente = $('#cliente').val();
 
@@ -177,15 +167,26 @@
 
             if (!confirm("¿Procesar venta?")) return;
 
-            // Enviamos los datos al servidor con AJAX
+            // --- AQUÍ ESTABA EL ERROR ---
             $.post('<?= base_url('ventas/guardar'); ?>', {
                 id_cliente: idCliente,
-                productos: carrito // Enviamos todo el array de productos
+                // CORRECCIÓN 1: Convertimos el array a TEXTO JSON para que PHP lo entienda
+                productos: JSON.stringify(carrito)
             }, function (response) {
-                alert("Venta registrada correctamente");
-                location.reload(); // Recargamos la página para limpiar todo
-            }).fail(function () {
-                alert("Error al procesar la venta");
+
+                // CORRECCIÓN 2: Leemos la respuesta del servidor
+                if (response.status === 'success') {
+                    alert("¡Venta registrada correctamente!");
+                    location.reload();
+                } else {
+                    // Si el servidor nos dice que hubo error (ej: stock insuficiente), lo mostramos
+                    alert("Error del Sistema: " + JSON.stringify(response.message));
+                }
+
+            }).fail(function (xhr, status, error) {
+                // CORRECCIÓN 3: Si explota (Error 500), mostramos el mensaje real en la consola
+                console.error(xhr.responseText);
+                alert("Ocurrió un error fatal. Revisa la consola (F12) para más detalles.");
             });
         });
     });
