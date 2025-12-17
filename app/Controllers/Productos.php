@@ -8,7 +8,7 @@ class Productos extends BaseController
 {
     public function index()
     {
-        
+
         // 1. Llamamos al Modelo
         $productoModel = new ProductoModel();
 
@@ -28,19 +28,29 @@ class Productos extends BaseController
     // 2. Recibe los datos y los guarda en la BD
     public function guardar()
     {
-        $productoModel = new ProductoModel();
 
-        // Recibimos los datos del formulario (por el 'name' de cada input)
-        $datos = [
+        // 1. Recibir la imagen
+        $img = $this->request->getFile('imagen');
+        $nombreImagen = null; // Por defecto nulo
+
+        // 2. Si subieron algo válido, lo guardamos
+        if ($img && $img->isValid() && !$img->hasMoved()) {
+            $nombreImagen = $img->getRandomName(); // Nombre aleatorio (ej: 18237.jpg)
+            $img->move(FCPATH . 'uploads/productos', $nombreImagen); // Guardar en carpeta
+        }
+
+        // 3. Preparar datos (SOLO los que tú usas)
+        $data = [
             'nombre' => $this->request->getPost('nombre'),
             'precio' => $this->request->getPost('precio'),
-            'stock'  => $this->request->getPost('stock'),
+            'stock' => $this->request->getPost('stock'),
+            'imagen' => $nombreImagen // <--- Lo nuevo
         ];
 
-        // Guardamos en la base de datos
-        $productoModel->insert($datos);
+        // 4. Guardar en Base de Datos
+        $productoModel = new \App\Models\ProductoModel();
+        $productoModel->save($data);
 
-        // Redireccionamos a la lista
         return redirect()->to(base_url('productos'));
     }
 
@@ -48,18 +58,18 @@ class Productos extends BaseController
     public function borrar($id)
     {
         $productoModel = new ProductoModel();
-        
+
         // CodeIgniter hace el DELETE WHERE id = $id automáticamente
         $productoModel->delete($id);
 
         return redirect()->to(base_url('productos'));
     }
-    
+
     // 4. Mostrar el formulario de edición con los datos cargados
     public function editar($id)
     {
         $productoModel = new ProductoModel();
-        
+
         // Buscamos el producto por su ID
         $datos['producto'] = $productoModel->find($id);
 
@@ -69,19 +79,33 @@ class Productos extends BaseController
     // 5. Procesar la actualización
     public function actualizar()
     {
-        $productoModel = new ProductoModel();
-
-        // Obtenemos el ID del producto (vendrá oculto en el formulario)
+        // 1. Recibimos el ID y datos básicos
         $id = $this->request->getPost('id');
 
-        $datos = [
+        $data = [
             'nombre' => $this->request->getPost('nombre'),
             'precio' => $this->request->getPost('precio'),
-            'stock'  => $this->request->getPost('stock'),
+            'stock' => $this->request->getPost('stock'),
         ];
 
-        // Actualizamos el registro que tenga ese ID
-        $productoModel->update($id, $datos);
+        // 2. Lógica de la Imagen
+        $img = $this->request->getFile('imagen');
+
+        // Si el usuario subió una imagen nueva válida
+        if ($img && $img->isValid() && !$img->hasMoved()) {
+
+            // Generamos nuevo nombre y movemos
+            $nuevoNombre = $img->getRandomName();
+            $img->move(FCPATH . 'uploads/productos', $nuevoNombre);
+
+            // Agregamos al array para actualizar la BD
+            $data['imagen'] = $nuevoNombre;
+        }
+        // SI NO SUBIÓ NADA, NO HACEMOS NADA (Se queda la imagen vieja en la BD)
+
+        // 3. Guardar cambios
+        $productoModel = new \App\Models\ProductoModel();
+        $productoModel->update($id, $data);
 
         return redirect()->to(base_url('productos'));
     }

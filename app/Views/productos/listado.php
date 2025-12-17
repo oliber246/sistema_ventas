@@ -47,32 +47,42 @@
 <div class="card shadow">
     <div class="card-body">
         <table class="table table-bordered table-hover" id="miTabla">
-            <thead class="table-dark">
+            <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Precio</th>
                     <th>Stock</th>
+                    <th>Imagen</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
+
             <tbody>
                 <?php foreach ($productos as $prod): ?>
                     <tr>
                         <td><?= $prod['id']; ?></td>
+
                         <td><?= $prod['nombre']; ?></td>
+
                         <td>S/ <?= $prod['precio']; ?></td>
+
                         <td><?= $prod['stock']; ?></td>
+
+                        <td class="text-center">
+                            <?php if (!empty($prod['imagen'])): ?>
+                                <img src="<?= base_url('uploads/productos/' . $prod['imagen']); ?>" width="50" height="50"
+                                    style="object-fit: contain;">
+                            <?php else: ?>
+                                <span class="text-muted small">Sin foto</span>
+                            <?php endif; ?>
+                        </td>
+
                         <td>
-                            <a href="<?= base_url('productos/editar/' . $prod['id']); ?>" class="btn btn-warning btn-sm"
-                                title="Editar este producto">
-                                Editar
-                            </a>
-                            <a href="<?= base_url('productos/borrar/' . $prod['id']); ?>" class="btn btn-danger btn-sm"
-                                onclick="return confirm('¿Estás seguro de eliminar este producto?');"
-                                title="Eliminar permanentemente">
-                                Borrar
-                            </a>
+                            <a href="<?= base_url('productos/editar/' . $prod['id']); ?>" class="btn btn-warning btn-sm"><i
+                                    class="bi bi-pencil-fill"></i></a>
+                            <a href="<?= base_url('productos/borrar/' . $prod['id']); ?>" class="btn btn-danger btn-sm"><i
+                                    class="bi bi-trash-fill"></i></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -83,11 +93,9 @@
 
 <?= $this->endSection(); ?>
 
-
 <?= $this->section('scripts'); ?>
 <script>
     $(document).ready(function () {
-        // Ya no necesitas poner el 'language', se carga solo.
         $('#miTabla').DataTable();
     });
 </script>

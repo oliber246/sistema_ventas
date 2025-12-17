@@ -10,7 +10,7 @@
             </div>
             <div class="card-body p-4">
 
-                <form action="<?= base_url('productos/guardar'); ?>" method="post">
+                <form action="<?= base_url('productos/guardar'); ?>" method="post" enctype="multipart/form-data">
 
                     <div class="mb-3">
                         <label class="form-label">Nombre del Producto</label>
@@ -27,6 +27,11 @@
                             <input type="number" min="0" name="stock" class="form-control" required>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">Imagen del Producto</label>
+                        <input type="file" class="form-control" name="imagen" id="imagen" accept="image/*">
+                    </div>
+                    
 
                     <hr>
 

@@ -17,7 +17,7 @@ class ProductoModel extends Model
 
     // ¡IMPORTANTE! Aquí pones las columnas que permites editar
     // Si no pones esto, CodeIgniter no te dejará guardar nada por seguridad.
-    protected $allowedFields = ['nombre', 'precio', 'stock'];
+    protected $allowedFields = ['nombre', 'precio', 'stock' , 'imagen'];
     
     // Activa las fechas automáticas (opcional, pero útil)
     protected $useTimestamps = false;

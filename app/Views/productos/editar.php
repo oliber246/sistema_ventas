@@ -9,7 +9,7 @@
                 <h5 class="mb-0">Editar Producto</h5>
             </div>
             <div class="card-body">
-                <form action="<?= base_url('productos/actualizar'); ?>" method="post">
+                <form action="<?= base_url('productos/actualizar'); ?>" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="id" value="<?= $producto['id']; ?>">
 
                     <div class="mb-3">
@@ -28,6 +28,20 @@
                         <label class="form-label">Stock (Cantidad)</label>
                         <input type="number" name="stock" class="form-control" value="<?= $producto['stock']; ?>"
                             required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Imagen del Producto</label>
+
+                        <?php if (!empty($producto['imagen'])): ?>
+                            <div class="mb-2">
+                                <img src="<?= base_url('uploads/productos/' . $producto['imagen']) ?>" class="img-thumbnail"
+                                    width="100">
+                                <small class="d-block text-muted">Imagen actual</small>
+                            </div>
+                        <?php endif; ?>
+
+                        <input type="file" class="form-control" name="imagen" accept="image/*">
+                        <div class="form-text">Deja esto vacío si no quieres cambiar la imagen.</div>
                     </div>
 
                     <hr>
