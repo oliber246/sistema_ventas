@@ -33,8 +33,11 @@
                                 <a href="<?= base_url('clientes/editar/' . $cli['id']); ?>" class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a href="<?= base_url('clientes/borrar/' . $cli['id']); ?>" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('¿Borrar cliente?');">
+
+                                <a href="#" 
+                                   data-href="<?= base_url('clientes/borrar/' . $cli['id']); ?>" 
+                                   class="btn btn-danger btn-sm btn-borrar"
+                                   title="Eliminar Cliente">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>
@@ -51,7 +54,6 @@
 <?= $this->section('scripts'); ?>
 <script>
     $(document).ready(function () {
-        // Ya no necesitas poner el 'language', se carga solo.
         $('#miTabla').DataTable();
     });
 </script>

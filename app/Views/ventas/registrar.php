@@ -113,9 +113,9 @@
             let cantidad = parseInt($('#cantidad').val());
             let stock = parseInt($('#stock').val());
 
-            if (!idProd) { alert("Seleccione un producto"); return; }
-            if (cantidad > stock) { alert("No hay suficiente stock"); return; }
-            if (cantidad <= 0) { alert("Cantidad inválida"); return; }
+            if (!idProd) { Swal.fire('Atención', "Seleccione un producto", 'warning'); return; }
+            if (cantidad > stock) { Swal.fire('Error', "No hay suficiente stock", 'error'); return; }
+            if (cantidad <= 0) { Swal.fire('Error', "Cantidad inválida", 'error'); return; }
 
             let subtotal = precio * cantidad;
 
@@ -158,36 +158,57 @@
             actualizarTabla();
         };
 
-        // 5. EVENTO: Finalizar Venta (CORREGIDO)
+        // 5. EVENTO: Finalizar Venta (CON SWEETALERT Y PDF)
         $('#btnFinalizar').click(function () {
             let idCliente = $('#cliente').val();
 
-            if (!idCliente) { alert("Seleccione un cliente"); return; }
-            if (carrito.length === 0) { alert("El carrito está vacío"); return; }
+            if (!idCliente) { Swal.fire('Falta Cliente', "Seleccione un cliente para la boleta", 'warning'); return; }
+            if (carrito.length === 0) { Swal.fire('Carrito Vacío', "Agregue productos antes de vender", 'warning'); return; }
 
-            if (!confirm("¿Procesar venta?")) return;
+            // Preguntamos con SweetAlert antes de enviar
+            Swal.fire({
+                title: '¿Procesar Venta?',
+                text: "Se generará la boleta y se descontará el stock.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, finalizar venta'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    
+                    // Enviamos los datos al servidor
+                    $.post('<?= base_url('ventas/guardar'); ?>', {
+                        id_cliente: idCliente,
+                        productos: JSON.stringify(carrito)
+                    }, function (response) {
 
-            // --- AQUÍ ESTABA EL ERROR ---
-            $.post('<?= base_url('ventas/guardar'); ?>', {
-                id_cliente: idCliente,
-                // CORRECCIÓN 1: Convertimos el array a TEXTO JSON para que PHP lo entienda
-                productos: JSON.stringify(carrito)
-            }, function (response) {
+                        if (response.status === 'success') {
+                            // SI TODO SALIÓ BIEN:
+                            Swal.fire({
+                                title: '¡Venta Exitosa!',
+                                text: 'Generando boleta electrónica...',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // 1. Abrimos el PDF en una nueva pestaña usando el ID que nos devolvió el Controller
+                                window.open('<?= base_url("ventas/generarBoleta/") ?>' + response.id_venta, '_blank');
+                                
+                                // 2. Recargamos la página para limpiar todo
+                                location.reload();
+                            });
+                        } else {
+                            // SI HUBO ERROR (Stock, BD, etc)
+                            Swal.fire('Error', "Detalle: " + JSON.stringify(response.message), 'error');
+                        }
 
-                // CORRECCIÓN 2: Leemos la respuesta del servidor
-                if (response.status === 'success') {
-                    alert("¡Venta registrada correctamente!");
-                    location.reload();
-                } else {
-                    // Si el servidor nos dice que hubo error (ej: stock insuficiente), lo mostramos
-                    alert("Error del Sistema: " + JSON.stringify(response.message));
+                    }).fail(function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        Swal.fire('Error Fatal', "Ocurrió un error en el servidor. Revisa la consola.", 'error');
+                    });
                 }
-
-            }).fail(function (xhr, status, error) {
-                // CORRECCIÓN 3: Si explota (Error 500), mostramos el mensaje real en la consola
-                console.error(xhr.responseText);
-                alert("Ocurrió un error fatal. Revisa la consola (F12) para más detalles.");
-            });
+            })
         });
     });
 </script>

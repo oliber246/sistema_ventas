@@ -32,8 +32,11 @@
                                     title="Editar">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a href="<?= base_url('usuarios/borrar/' . $usu['id']); ?>" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('¿Eliminar usuario permanentemente?');" title="Eliminar">
+
+                                <a href="#" 
+                                   data-href="<?= base_url('usuarios/borrar/' . $usu['id']); ?>" 
+                                   class="btn btn-danger btn-sm btn-borrar"
+                                   title="Eliminar">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>
@@ -50,8 +53,8 @@
 <?= $this->section('scripts'); ?>
 <script>
     $(document).ready(function () {
-        // Ya no necesitas poner el 'language', se carga solo.
-        $('#miTabla').DataTable();
+        // Corregido: Ahora apunta al ID correcto de la tabla ('#tablaUsuarios')
+        $('#tablaUsuarios').DataTable();
     });
 </script>
 <?= $this->endSection(); ?>

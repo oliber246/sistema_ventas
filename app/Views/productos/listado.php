@@ -79,10 +79,15 @@
                         </td>
 
                         <td>
-                            <a href="<?= base_url('productos/editar/' . $prod['id']); ?>" class="btn btn-warning btn-sm"><i
-                                    class="bi bi-pencil-fill"></i></a>
-                            <a href="<?= base_url('productos/borrar/' . $prod['id']); ?>" class="btn btn-danger btn-sm"><i
-                                    class="bi bi-trash-fill"></i></a>
+                            <a href="<?= base_url('productos/editar/' . $prod['id']); ?>" class="btn btn-warning btn-sm"
+                                title="Editar">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+
+                            <a href="#" data-href="<?= base_url('productos/borrar/' . $prod['id']); ?>"
+                                class="btn btn-danger btn-sm btn-borrar" title="Eliminar">
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

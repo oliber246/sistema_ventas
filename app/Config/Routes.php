@@ -54,4 +54,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('usuarios/editar/(:num)', 'Usuarios::editar/$1');
     $routes->post('usuarios/actualizar', 'Usuarios::actualizar');
     $routes->get('usuarios/borrar/(:num)', 'Usuarios::borrar/$1');
+
+    // Permiso para generar la boleta PDF (El (:num) representa el ID de la venta)
+    $routes->get('ventas/generarBoleta/(:num)', 'Ventas::generarBoleta/$1');
 });

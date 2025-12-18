@@ -69,6 +69,36 @@
 
     <script src="<?= base_url('js/datatables_config.js'); ?>"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Detectar clic en cualquier botón con la clase "btn-borrar"
+            $(document).on('click', '.btn-borrar', function(e) {
+                e.preventDefault(); // Evita que el enlace funcione de golpe
+                
+                // Captura la URL real que pusimos en data-href
+                const urlBorrar = $(this).data('href'); 
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¡No podrás revertir esto! Se eliminará permanentemente.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33', // Rojo para confirmar borrado
+                    cancelButtonColor: '#3085d6', // Azul para cancelar
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Si el usuario dice que SÍ, lo mandamos a la URL de borrado
+                        window.location.href = urlBorrar;
+                    }
+                })
+            });
+        });
+    </script>
+
     <?= $this->renderSection('scripts'); ?>
 
 </body>
